@@ -60,7 +60,7 @@ export function QuoteDialog() {
         aria-modal="true"
         aria-label="Your event plan"
         onClick={(e) => e.stopPropagation()}
-        className="animate-step-in max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-t-3xl bg-[var(--surface)] shadow-[var(--shadow-lg)] sm:rounded-3xl"
+        className="animate-step-in max-h-[92dvh] w-full overscroll-contain max-w-3xl overflow-y-auto rounded-t-3xl bg-[var(--surface)] shadow-[var(--shadow-lg)] sm:rounded-3xl"
       >
         <div className="dot-grid sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[var(--line)] bg-gradient-to-br from-[var(--accent-softer)] to-white px-5 py-5 sm:px-7">
           <div>
@@ -73,12 +73,12 @@ export function QuoteDialog() {
               </span>
             </div>
           </div>
-          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-[var(--ink-subtle)] hover:bg-white hover:text-[var(--ink)]" aria-label="Close">
+          <button type="button" onClick={() => setOpen(false)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg p-2 text-[var(--ink-subtle)] hover:bg-white hover:text-[var(--ink)]" aria-label="Close">
             <Icon name="close" />
           </button>
         </div>
 
-        <div className="grid gap-6 p-5 sm:p-7 md:grid-cols-2">
+        <div className="quote-content grid min-w-0 gap-6 p-5 sm:p-7 md:grid-cols-2">
           <section className="space-y-4">
             <div>
               <p className="eyebrow mb-2">What&apos;s in the room</p>

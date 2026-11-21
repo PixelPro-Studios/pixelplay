@@ -67,7 +67,7 @@ function ToolButton({
       title={label}
       aria-label={label}
       aria-pressed={active}
-      className={`flex h-9 items-center justify-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition disabled:opacity-35 ${
+      className={`flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition disabled:opacity-35 ${
         active
           ? "border-[var(--accent)] bg-[var(--accent)] text-white shadow-[var(--shadow-accent)]"
           : "border-[var(--line)] bg-white/90 text-[var(--ink)] shadow-[var(--shadow-xs)] backdrop-blur hover:border-[var(--line-strong)]"
@@ -90,7 +90,7 @@ function TopBar({ canWalk }: { canWalk: boolean }) {
   const hasItems = usePlayStore((s) => s.placements.length > 0);
 
   return (
-    <header className="relative z-30 flex items-center gap-2 border-b border-[var(--line)] bg-white/85 px-3 py-2 backdrop-blur-xl sm:gap-3 sm:px-4">
+    <header className="builder-header relative z-30 flex shrink-0 items-center gap-2 border-b border-[var(--line)] bg-white/85 px-3 py-2 backdrop-blur-xl sm:gap-3 sm:px-4">
       <div className="flex shrink-0 items-center gap-2.5">
         <Logo />
         <div className="hidden sm:block">
@@ -144,7 +144,7 @@ function ViewControls() {
   const setView = usePlayStore((s) => s.setView);
   const turnView = usePlayStore((s) => s.turnView);
   return (
-    <div className="pointer-events-auto flex flex-col items-end gap-1.5">
+    <div className="view-controls pointer-events-auto flex flex-col items-end gap-1.5">
       <div className="flex gap-1.5">
         <ToolButton label="Turn view left (Q)" onClick={() => turnView(-1)}>
           <Icon name="turnLeft" />
@@ -209,7 +209,7 @@ function EmptyHint() {
       <div className="pointer-events-auto card max-w-xs p-4 text-center shadow-[var(--shadow-lg)]">
         <p className="font-pixel text-lg font-bold text-[var(--ink)]">An empty room!</p>
         <p className="mt-1 text-xs text-[var(--ink-muted)]">
-          Drag gear from the panel onto the grid. Most shows start with a stage.
+          Add equipment below, or drag it onto the grid. Most shows start with a stage.
         </p>
         <button
           type="button"
@@ -240,7 +240,7 @@ function Toaster() {
         ? "bg-[#06352c] text-emerald-100"
         : "bg-[var(--ink)] text-white";
   return (
-    <div className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2">
+    <div role="status" className="pointer-events-none absolute bottom-4 left-1/2 z-30 w-max max-w-[calc(100%-24px)] -translate-x-1/2">
       <div key={visible.id} className={`animate-step-in rounded-full px-4 py-2 text-xs font-semibold shadow-[var(--shadow-lg)] ${tone}`}>
         {visible.text}
       </div>
@@ -269,15 +269,15 @@ export function BuilderShell() {
   const setWalkMode = usePlayStore((s) => s.setWalkMode);
   const desktop = useMediaQuery("(min-width: 1024px)");
   // Pointer Lock has no touch equivalent, so only offer the walkthrough with a mouse.
-  const canWalk = useMediaQuery("(pointer: fine)");
+  const canWalk = useMediaQuery("(min-width: 1024px) and (pointer: fine)");
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className="builder-app flex h-dvh flex-col overflow-hidden">
       {showLoader ? <PixelLoader onComplete={() => setShowLoader(false)} /> : null}
 
       <TopBar canWalk={canWalk} />
 
-      <div className="relative flex min-h-0 flex-1">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
         {desktop ? <Palette /> : null}
 
         <main className="builder-stage relative min-w-0 flex-1">
@@ -297,10 +297,12 @@ export function BuilderShell() {
 
         {/* Inspector: right rail on desktop, bottom sheet on smaller screens. */}
         <aside
+          inert={!selectedId}
+          aria-label="Equipment settings"
           className={`absolute z-20 border-[var(--line)] bg-white/95 shadow-[var(--shadow-lg)] backdrop-blur-xl transition-transform duration-300 ease-out ${
             desktop
               ? `top-0 right-0 bottom-0 w-80 border-l ${selectedId ? "translate-x-0" : "translate-x-full"}`
-              : `inset-x-0 bottom-0 max-h-[60%] rounded-t-3xl border-t ${selectedId ? "translate-y-0" : "translate-y-full"}`
+              : `inset-x-0 bottom-0 h-[min(55dvh,30rem)] max-h-full rounded-t-3xl border-t ${selectedId ? "translate-y-0" : "translate-y-full"}`
           }`}
           aria-hidden={!selectedId}
         >

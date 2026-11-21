@@ -55,8 +55,8 @@ export function SetupScreen() {
   };
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-[var(--background)]/80 backdrop-blur-md">
-      <div className="mx-auto flex min-h-full max-w-5xl items-center px-4 py-8 sm:px-6">
+    <div className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-[var(--background)]/80 backdrop-blur-md">
+      <div className="mx-auto flex min-h-full max-w-5xl items-center px-3 py-4 sm:px-6">
         <div className="animate-step-in card w-full overflow-hidden shadow-[var(--shadow-lg)]">
           <div className="dot-grid border-b border-[var(--line)] bg-gradient-to-br from-[var(--accent-softer)] to-transparent px-5 py-6 sm:px-8">
             <p className="font-silkscreen text-[11px] text-[var(--accent-ink)]">PIXELPLAY · NEW LAYOUT</p>
@@ -64,7 +64,7 @@ export function SetupScreen() {
               Build your event, block by block
             </h1>
             <p className="mt-2 max-w-xl text-sm text-[var(--ink-muted)]">
-              Pick a room, drag in stages, speakers and lights, and watch the price and your score update as you go.
+              Pick a room, add stages, speakers and lights, and watch the price and your score update as you go.
             </p>
           </div>
 
@@ -88,7 +88,7 @@ export function SetupScreen() {
                     >
                       <RoomSwatch l={v.lengthM} d={v.depthM} outdoor={v.kind.startsWith("outdoor")} />
                       <span className="min-w-0">
-                        <span className="block truncate text-[0.8125rem] font-semibold text-[var(--ink)]">{v.name}</span>
+                        <span className="block text-[0.8125rem] font-semibold text-[var(--ink)]">{v.name}</span>
                         <span className="block text-[11px] text-[var(--ink-muted)] tabular-nums">
                           {KIND_LABEL[v.kind]} · {v.lengthM}×{v.depthM}m
                           {v.ceilingM ? ` · ${v.ceilingM}m ceiling` : ""}

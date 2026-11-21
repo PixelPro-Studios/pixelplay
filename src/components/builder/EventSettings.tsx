@@ -138,7 +138,7 @@ export function EventSettingsButton() {
       </button>
 
       {open ? (
-        <div className="animate-step-in card absolute top-full left-0 z-40 mt-2 w-[min(92vw,26rem)] p-4 shadow-[var(--shadow-lg)]">
+        <div className="animate-step-in event-settings-panel card fixed inset-x-3 top-20 z-40 max-h-[calc(100dvh-110px)] overflow-y-auto overscroll-contain sm:absolute sm:inset-x-auto sm:top-full sm:left-0 sm:mt-2 sm:w-[26rem] p-4 shadow-[var(--shadow-lg)]">
           <label className="block">
             <span className="mb-2 block text-[0.8125rem] font-semibold text-[var(--ink)]">Venue</span>
             <select

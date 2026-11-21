@@ -55,7 +55,7 @@ function Chips<T extends string | number>({
             disabled={o.disabled}
             aria-pressed={active}
             onClick={() => onChange(o.value)}
-            className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
+            className={`min-h-11 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
               active
                 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-ink)]"
                 : "border-[var(--line)] bg-[var(--surface)] text-[var(--ink-muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]"
@@ -85,7 +85,7 @@ function Stepper({
   onChange: (v: number) => void;
 }) {
   const btn =
-    "flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] transition hover:border-[var(--line-strong)] disabled:opacity-35";
+    "flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[var(--ink)] transition hover:border-[var(--line-strong)] disabled:opacity-35";
   return (
     <div className="flex items-center gap-2">
       <button type="button" className={btn} disabled={value <= min} onClick={() => onChange(Math.max(min, value - step))} aria-label="Less">
@@ -244,8 +244,8 @@ export function Inspector() {
   const { w, d } = footprintOf(p);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-start gap-3 border-b border-[var(--line)] p-4">
+    <div className="inspector flex h-full min-h-0 flex-col">
+      <div className="flex items-start gap-3 shrink-0 border-b border-[var(--line)] p-4">
         <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${CATEGORY_TONE[item.category]}`}>
           <ItemIcon kind={p.kind} className="h-6 w-6" />
         </span>
@@ -258,14 +258,14 @@ export function Inspector() {
         <button
           type="button"
           onClick={() => select(null)}
-          className="rounded-lg p-1.5 text-[var(--ink-subtle)] transition hover:bg-[var(--surface-sunken)] hover:text-[var(--ink)]"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg p-1.5 text-[var(--ink-subtle)] transition hover:bg-[var(--surface-sunken)] hover:text-[var(--ink)]"
           aria-label="Close"
         >
           <Icon name="close" />
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain p-4">
         <p className="text-xs leading-relaxed text-[var(--ink-muted)]">{item.blurb}</p>
 
         <Settings p={p} />
@@ -276,14 +276,14 @@ export function Inspector() {
               <button
                 type="button"
                 onClick={() => rotate(p.id, (((p.rotation + 270) % 360) as Rotation))}
-                className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--line-strong)]"
+                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--line-strong)]"
               >
                 <Icon name="rotateLeft" /> Turn left
               </button>
               <button
                 type="button"
                 onClick={() => rotate(p.id, (((p.rotation + 90) % 360) as Rotation))}
-                className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--line-strong)]"
+                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xs font-semibold text-[var(--ink)] transition hover:border-[var(--line-strong)]"
               >
                 Turn right <Icon name="rotate" />
               </button>
@@ -300,7 +300,7 @@ export function Inspector() {
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 border-t border-[var(--line)] p-4">
+      <div className="grid grid-cols-2 shrink-0 gap-2 border-t border-[var(--line)] p-4">
         <button
           type="button"
           onClick={() => duplicate(p.id)}
@@ -316,7 +316,7 @@ export function Inspector() {
         >
           <Icon name="trash" /> Remove
         </button>
-        <p className="col-span-2 mt-1 text-center text-[11px] text-[var(--ink-subtle)]">
+        <p className="col-span-2 mt-1 hidden lg:block text-center text-[11px] text-[var(--ink-subtle)]">
           Drag to move · <kbd className="font-semibold">R</kbd> turn · <kbd className="font-semibold">Del</kbd> remove
         </p>
       </div>

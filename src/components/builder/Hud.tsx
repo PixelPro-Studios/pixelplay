@@ -118,15 +118,15 @@ export function Hud() {
   const toggle = (d: Drawer) => setDrawer((cur) => (cur === d ? null : d));
 
   return (
-    <div className="relative z-20">
+    <div className="builder-hud relative z-20 shrink-0">
       {drawer ? (
         <div className="absolute right-0 bottom-full left-0 flex justify-center px-3 pb-2 sm:px-4">
-          <div className="animate-step-in card max-h-[min(60vh,32rem)] w-full max-w-xl overflow-y-auto p-4 shadow-[var(--shadow-lg)]">
+          <div className="animate-step-in card max-h-[min(65dvh,32rem)] w-full max-w-xl overflow-y-auto p-4 shadow-[var(--shadow-lg)]">
             <div className="mb-3 flex items-center justify-between">
               <p className="font-pixel text-base font-bold text-[var(--ink)]">
                 {drawer === "tips" ? "Recommendations" : "Cost breakdown"}
               </p>
-              <button type="button" onClick={() => setDrawer(null)} className="rounded-lg p-1 text-[var(--ink-subtle)] hover:text-[var(--ink)]" aria-label="Close">
+              <button type="button" onClick={() => setDrawer(null)} className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--ink-subtle)] hover:text-[var(--ink)]" aria-label="Close">
                 <Icon name="close" />
               </button>
             </div>
@@ -141,9 +141,9 @@ export function Hud() {
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3 border-t border-[var(--line)] bg-white/90 px-3 py-2.5 backdrop-blur-xl sm:gap-4 sm:px-4">
+      <div className="hud-bar grid grid-cols-[1fr_auto_auto] items-center gap-2 border-t border-[var(--line)] bg-white/90 px-3 py-2.5 backdrop-blur-xl sm:flex sm:gap-4 sm:px-4">
         {/* Score */}
-        <div className="relative flex shrink-0 items-center gap-2.5">
+        <div className="hud-score relative col-start-1 row-start-2 flex min-w-0 items-center gap-2.5">
           <Confetti nonce={burst} />
           <div>
             <Stars stars={insights.stars} />
@@ -158,11 +158,11 @@ export function Hud() {
         <button
           type="button"
           onClick={() => toggle("cost")}
-          className="group min-w-0 flex-1 rounded-xl px-2 py-1 text-left transition hover:bg-[var(--surface-sunken)] sm:max-w-xs"
+          className="hud-budget group col-span-3 col-start-1 row-start-1 min-w-0 flex-1 rounded-xl px-2 py-1 text-left transition hover:bg-[var(--surface-sunken)] sm:max-w-xs"
           aria-expanded={drawer === "cost"}
         >
           <div className="flex items-baseline justify-between gap-2">
-            <span className="font-display truncate text-sm font-bold tabular-nums text-[var(--ink)]">
+            <span className="font-display text-sm font-bold tabular-nums text-[var(--ink)]">
               {price.lines.length ? formatSgdRange(price.lowSgd, price.highSgd) : "$0"}
             </span>
             <span className="hidden shrink-0 text-[11px] text-[var(--ink-subtle)] sm:inline">of {sgd(budget)}</span>
@@ -195,7 +195,7 @@ export function Hud() {
         <button
           type="button"
           onClick={() => toggle("tips")}
-          className="relative flex shrink-0 items-center gap-1.5 rounded-xl border border-[var(--line-strong)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--ink)] lg:hidden"
+          className="relative col-start-2 row-start-2 flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[var(--line-strong)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--ink)] lg:hidden"
           aria-expanded={drawer === "tips"}
         >
           Tips
@@ -210,7 +210,7 @@ export function Hud() {
           type="button"
           onClick={() => setQuoteOpen(true)}
           disabled={!placed}
-          className="shrink-0 rounded-xl bg-[var(--accent)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-accent)] transition hover:-translate-y-px hover:bg-[var(--accent-hover)] disabled:opacity-45 disabled:hover:translate-y-0"
+          className="col-start-3 row-start-2 min-h-11 shrink-0 rounded-xl bg-[var(--accent)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-accent)] transition hover:-translate-y-px hover:bg-[var(--accent-hover)] disabled:opacity-45 disabled:hover:translate-y-0"
         >
           <span className="hidden sm:inline">Get it quoted →</span>
           <span className="sm:hidden">Quote →</span>

@@ -6,7 +6,7 @@ export function PriceRange({ estimate }: { estimate: PriceEstimate }) {
     <section className="card overflow-hidden">
       <div className="border-b border-[var(--line)] bg-gradient-to-br from-[var(--accent-softer)] to-transparent p-4">
         <p className="eyebrow">Rough price range</p>
-        <p className="font-display mt-1.5 text-2xl leading-none font-bold tracking-tight text-[var(--ink)] tabular-nums">
+        <p className="font-display mt-1.5 text-xl sm:text-2xl leading-tight font-bold tracking-tight text-[var(--ink)] tabular-nums">
           {formatSgdRange(estimate.lowSgd, estimate.highSgd)}
         </p>
         <p className="mt-1.5 text-xs font-medium text-[var(--ink-muted)]">per day</p>
@@ -19,7 +19,7 @@ export function PriceRange({ estimate }: { estimate: PriceEstimate }) {
         {estimate.lines.map((line) => (
           <li
             key={line.id}
-            className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-[0.8125rem]"
+            className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 py-2.5 text-[0.8125rem]"
           >
             <span className="text-[var(--ink-muted)]">{line.label}</span>
             <span className="shrink-0 font-semibold text-[var(--ink)] tabular-nums">

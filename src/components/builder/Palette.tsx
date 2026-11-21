@@ -1,10 +1,10 @@
 "use client";
 
-import { ItemIcon } from "@/components/builder/icons";
+import { Icon, ItemIcon } from "@/components/builder/icons";
 import { CATALOG, CATEGORY_LABELS, CATEGORY_ORDER, KINDS_BY_CATEGORY, type Category } from "@/lib/builder/catalog";
 import type { ItemKind } from "@/lib/builder/types";
 import { usePlayStore } from "@/lib/store";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const CATEGORY_TONE: Record<Category, string> = {
   stage: "bg-[#ddf5f0] text-[#086354]",
@@ -28,43 +28,42 @@ function startDrag(kind: ItemKind, e: React.PointerEvent) {
 }
 
 function ItemCard({ kind, count, compact }: { kind: ItemKind; count: number; compact?: boolean }) {
+  const pointerType = useRef<string | null>(null);
   const item = CATALOG[kind];
   const full = count >= item.max;
+  const changeQuantity = (direction: 1 | -1) => {
+    const store = usePlayStore.getState();
+    const selected = store.selectedId;
+    if (direction === 1) {
+      store.autoAdd(kind);
+      // Quick quantity changes keep the room visible instead of opening the inspector.
+      store.select(selected);
+    } else {
+      const last = store.placements.filter(p => p.kind === kind).at(-1);
+      if (last) store.removeItem(last.id);
+    }
+  };
   return (
-    <button
-      type="button"
-      onPointerDown={(e) => startDrag(kind, e)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          usePlayStore.getState().autoAdd(kind);
-        }
-      }}
-      title={`${item.blurb} Drag onto the grid, or click to drop it in a good spot.`}
-      aria-label={`Add ${item.label}`}
-      className={`group relative flex select-none items-center gap-2.5 rounded-xl border bg-[var(--surface)] text-left shadow-[var(--shadow-xs)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-md)] active:translate-y-0 active:scale-[0.98] ${
-        full ? "border-[var(--line)] opacity-55" : "border-[var(--line)]"
-      } ${compact ? "w-[7.5rem] shrink-0 flex-col items-start gap-1.5 p-2.5" : "p-2"}`}
-      // Horizontal swipes scroll the mobile dock; vertical ones drag gear up into the room.
-      style={{ touchAction: compact ? "pan-x" : "pan-y" }}
-    >
-      <span
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${CATEGORY_TONE[item.category]}`}
+    <div className={`gear-card rounded-xl border border-[var(--line)] bg-[var(--surface)] p-2 shadow-[var(--shadow-xs)] ${compact ? "w-44 shrink-0" : "w-full"}`}>
+      <button
+        type="button"
+        onPointerDown={(e) => { pointerType.current = e.pointerType; if (e.pointerType !== "touch" && !full) startDrag(kind, e); }}
+        onClick={(e) => { if (e.detail === 0 || pointerType.current === "touch") changeQuantity(1); }}
+        disabled={full}
+        title={`${item.blurb} Drag onto the grid, or use + to auto-place.`}
+        aria-label={`Add ${item.label}`}
+        className="flex min-h-11 w-full items-center gap-2.5 rounded-lg text-left disabled:opacity-50"
+        style={{ touchAction: "pan-x pan-y" }}
       >
-        <ItemIcon kind={kind} />
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-[0.8125rem] leading-tight font-semibold text-[var(--ink)]">
-          {item.label}
-        </span>
-        <span className="mt-0.5 block text-[11px] text-[var(--ink-muted)] tabular-nums">{item.priceHint}</span>
-      </span>
-      {count > 0 ? (
-        <span className="font-silkscreen absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--ink)] px-1.5 text-[10px] text-white">
-          {count}
-        </span>
-      ) : null}
-    </button>
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${CATEGORY_TONE[item.category]}`}><ItemIcon kind={kind} /></span>
+        <span className="min-w-0"><span className="block text-[0.8125rem] font-semibold text-[var(--ink)]">{item.label}</span><span className="block text-[11px] text-[var(--ink-muted)]">{item.priceHint}</span></span>
+      </button>
+      <div className="mt-2 flex items-center justify-between gap-2 rounded-lg bg-[var(--surface-muted)]" role="group" aria-label={`${item.label} quantity`}>
+        <button type="button" className="quantity-button" aria-label={`Remove one ${item.label}`} disabled={count === 0} onClick={() => changeQuantity(-1)}><Icon name="minus" /></button>
+        <output aria-live="polite" aria-label={`${item.label} count`} className="text-sm font-semibold tabular-nums text-[var(--ink)]">{count}</output>
+        <button type="button" className="quantity-button" aria-label={`Add one ${item.label}`} disabled={full} onClick={() => changeQuantity(1)}><Icon name="plus" /></button>
+      </div>
+    </div>
   );
 }
 
@@ -96,14 +95,26 @@ export function Palette() {
 /** Phone / small tablet: one horizontal strip above the HUD. */
 export function PaletteDock() {
   const counts = useCounts();
+  const selectedId = usePlayStore(s => s.selectedId);
+  const select = usePlayStore(s => s.select);
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState<Category>("stage");
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  // Hide the tray while inspecting an item, without losing the chosen category.
+  const expanded = open && !selectedId;
   return (
-    <div className="border-t border-[var(--line)] bg-white/85 backdrop-blur-xl">
-      <div className="flex gap-2 overflow-x-auto px-3 py-2.5 [scrollbar-width:none]">
-        {CATEGORY_ORDER.flatMap((cat) => KINDS_BY_CATEGORY[cat]).map((kind) => (
-          <ItemCard key={kind} kind={kind} count={counts[kind]} compact />
-        ))}
-      </div>
-      <p className="px-3 pb-2 text-[10px] text-[var(--ink-subtle)]">Tap to auto-place · drag up into the room</p>
+    <div className="mobile-gear shrink-0 border-t border-[var(--line)] bg-white/95 backdrop-blur-xl">
+      <button type="button" className="flex min-h-12 w-full items-center justify-between px-4 text-sm font-semibold text-[var(--ink)]" aria-expanded={expanded} aria-controls="gear-tray" onClick={() => { select(null); setOpen(!expanded); }}>
+        <span className="flex items-center gap-2"><Icon name="plus" /> Add equipment <span className="text-xs font-normal text-[var(--ink-muted)]">{total} in room</span></span><Icon name="chevronUp" className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
+      </button>
+      {expanded ? <div id="gear-tray">
+        <div className="flex gap-1 overflow-x-auto px-3 pb-2" role="group" aria-label="Equipment categories">
+          {CATEGORY_ORDER.map(cat => <button key={cat} type="button" aria-pressed={cat === category} onClick={() => setCategory(cat)} className={`min-h-11 shrink-0 rounded-lg px-3 text-xs font-semibold ${cat === category ? "bg-[var(--accent-soft)] text-[var(--accent-ink)]" : "text-[var(--ink-muted)]"}`}>{CATEGORY_LABELS[cat]}</button>)}
+        </div>
+        <div className="flex gap-2 overflow-x-auto px-3 pb-3 [scrollbar-width:thin]">
+          {KINDS_BY_CATEGORY[category].map(kind => <ItemCard key={kind} kind={kind} count={counts[kind]} compact />)}
+        </div>
+      </div> : null}
     </div>
   );
 }
